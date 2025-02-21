@@ -1,11 +1,33 @@
 # Leetcode_problems
+2
 
-This repository was automatically updated using a Python script.
 
 ## Description
-Updated description for Leetcode_problems
+2
 
-## Topics
-python, automation, github-api
 
-Last updated: 2025-02-21 09:33:05
+## Features
+2
+
+
+## Technologies
+2
+
+
+## Installation
+2
+
+
+## Usage
+2
+
+
+## Contributing
+2
+
+
+## License
+2
+
+## Repository Visualization
+![Repository Visualization](https://raw.githubusercontent.com/aliammari1/Leetcode_problems/main/assets/repo_image_Leetcode_problems.png)
