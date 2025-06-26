@@ -1,0 +1,4 @@
+// https://leetcode.com/problems/managers-with-at-least-5-direct-reports
+
+/* Write your PL/SQL query statement below */
+select name from employee where id in (select managerId from employee group by managerId having count(managerId) >= 5)
