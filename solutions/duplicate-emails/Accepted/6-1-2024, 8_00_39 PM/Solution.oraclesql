@@ -1,0 +1,4 @@
+// https://leetcode.com/problems/duplicate-emails
+
+/* Write your PL/SQL query statement below */
+select distinct email as "Email" from person p where (select count(email) from person where email = p.email ) >= 2;

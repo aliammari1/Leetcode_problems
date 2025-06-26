@@ -1,0 +1,4 @@
+// https://leetcode.com/problems/employee-bonus
+
+/* Write your PL/SQL query statement below */
+select name as "name",bonus as "bonus" from employee e left join bonus b on b.empId = e.empId where b.bonus < 1000 or bonus is null;
