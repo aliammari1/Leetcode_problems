@@ -196,7 +196,7 @@ Contributions are welcome! Here's how you can help:
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/new-solution`)
 3. Follow the established directory structure: `problem-name/status/timestamp/`
-4. Include both solution file and info.txt metadata
+4. Include solution files with clear comments and explanations
 5. Commit your changes (`git commit -m 'Add solution for Problem XYZ'`)
 6. Push to the branch (`git push origin feature/new-solution`)
 7. Open a Pull Request
