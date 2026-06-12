@@ -1,0 +1,10 @@
+version: 2
+# Archive repo: GitHub Actions are the only moving dependency worth tracking.
+# (Renovate config also present for those who prefer it; pick one when enabling.)
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
