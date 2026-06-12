@@ -1,0 +1,29 @@
+name: Claude PR review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review:
+    name: "@claude review"
+    runs-on: ubuntu-latest
+    # Gated on the secret: skips cleanly when ANTHROPIC_API_KEY is absent.
+    if: ${{ github.event_name == 'pull_request' || contains(github.event.comment.body, '@claude') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Claude Code Action
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Configurable; defaults to Sonnet for cost on an archive repo.
+          model: ${{ vars.AI_MODEL || 'claude-sonnet-4-6' }}
