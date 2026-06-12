@@ -1,4 +1,4 @@
-# Leetcode Problems
+# Every LeetCode problem I solved — including my real Wrong-Answer / TLE submissions and the lesson from each
 
 <!-- TODO: replace with the committed banner once generated (see BANNER.md + assets/). -->
 <!-- ![Leetcode Problems banner](assets/banner.png) -->
@@ -8,11 +8,27 @@
 [![Accepted](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faliammari1%2FLeetcode_problems%2Fmain%2Fdocs%2Fprogress.json&query=%24.stats.accepted_pct&suffix=%25&label=accepted&color=success)](docs/progress.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A LeetCode solution archive organized by individual problem directories. What makes
-it different from a typical solutions dump: it preserves the **real submission
-history** — every Wrong Answer, Runtime Error, Time Limit Exceeded, and Compile
-Error attempt that came before the accepted solution, each timestamped — across
-C++, Java, Oracle SQL, and MySQL.
+Not another clean-solutions dump. This archive of **173 problems / 542 files**
+keeps the **real submission history** — every Wrong Answer, Runtime Error, Time
+Limit Exceeded, and Compile Error attempt that came *before* the accepted
+solution, each timestamped — across C++, Java, Oracle SQL, and MySQL. You can
+read the *progression* of how each problem got solved, and the bug each failed
+attempt tripped on.
+
+### 🔎 [Browse all 173 problems (searchable) →](https://leetcode-problems.pages.dev)
+
+Per-problem pages show the **verdict history** (Accepted → Wrong Answer → TLE →
+Runtime Error, timestamped) with every language variant in tabs. See also the
+[**Lessons / common mistakes**](https://leetcode-problems.pages.dev/lessons/)
+index — the 89 problems I did *not* get on the first try.
+
+> **⭐ If preserving the failed attempts is useful to you, star the repo** — it
+> helps others find an honest, mistakes-and-all study archive.
+
+> **Coming in Wave 2:** the **`leetcode-solutions` MCP** — a bundled, offline
+> MCP server exposing all 173 problems *with their wrong-answer history* to any
+> MCP-capable assistant, no session cookie required. *"The MCP that remembers
+> what NOT to do."*
 
 ## 🚀 Features
 
@@ -401,6 +417,14 @@ License** (`SPDX-License-Identifier: MIT`) — see [LICENSE](LICENSE).
 **Ali Ammari** - [GitHub Profile](https://github.com/aliammari1)
 
 Project Link: [https://github.com/aliammari1/Leetcode_problems](https://github.com/aliammari1/Leetcode_problems)
+
+---
+
+## 🔗 Related projects
+
+- **[HackerRank solution archive](https://github.com/aliammari1/Hackerrank_problems)** — the companion archive, same honest, history-preserving format.
+- **[All my projects (profile hub)](https://github.com/aliammari1)** — apps, tools, and games.
+- **[LeetCode profile](https://leetcode.com/aliammari1/)**
 
 ---
 

@@ -59,6 +59,7 @@ plugins:
 nav:
   - Home: index.md
   - All Problems: problems/index.md
+  - Lessons / common mistakes: lessons.md
   - Index by Language: tags.md
 
 extra:

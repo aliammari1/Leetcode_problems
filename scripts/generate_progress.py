@@ -41,6 +41,21 @@ SOLUTIONS = ROOT / "solutions"
 DOCS = ROOT / "docs"
 README = ROOT / "README.md"
 PROGRESS_JSON = DOCS / "progress.json"
+NUMBERS_JSON = Path(__file__).resolve().parent / "problem_numbers.json"
+
+
+def load_numbers() -> dict[str, int]:
+    """Slug -> canonical LeetCode problem number (for exact-match SEO titles).
+
+    Optional file; missing slugs simply omit the number prefix.
+    """
+    if not NUMBERS_JSON.is_file():
+        return {}
+    raw = json.loads(NUMBERS_JSON.read_text(encoding="utf-8"))
+    return {k: v for k, v in raw.items() if not k.startswith("_")}
+
+
+NUMBERS = load_numbers()
 
 # Maps file extension -> (display language, mkdocs content-tab fence language).
 EXT_LANG = {
@@ -91,6 +106,20 @@ class Problem:
     @property
     def title(self) -> str:
         return self.slug.replace("-", " ").title()
+
+    @property
+    def number(self) -> int | None:
+        return NUMBERS.get(self.slug)
+
+    @property
+    def seo_title(self) -> str:
+        """Exact-match page title for search: '<#>. <Problem> — Solution'.
+
+        Falls back to '<Problem> — Solution' when the number is unknown.
+        """
+        if self.number is not None:
+            return f"{self.number}. {self.title} — Solution"
+        return f"{self.title} — Solution"
 
     @property
     def accepted(self) -> bool:
@@ -286,12 +315,29 @@ def build_docs(problems: dict[str, Problem], stats: dict) -> None:
 
     write_problems_index(pages / "index.md", problems)
     write_tags_index(DOCS / "tags.md", problems)
+    write_lessons_index(DOCS / "lessons.md", problems)
     write_docs_home(DOCS / "index.md", stats, problems)
+
+
+# Verdicts that are "wrong attempts" worth a lesson callout.
+WRONG_VERDICTS = ("Wrong Answer", "Time Limit Exceeded", "Runtime Error", "Compile Error")
+
+# Cross-link footer (Related projects + profile hub) appended to every page.
+RELATED_FOOTER = "\n".join(
+    [
+        "---",
+        "",
+        "**Related:** "
+        "[HackerRank solution archive](https://github.com/aliammari1/Hackerrank_problems) · "
+        "[All my projects (profile hub)](https://github.com/aliammari1) · "
+        "[LeetCode profile](https://leetcode.com/aliammari1/)",
+    ]
+)
 
 
 def write_problem_page(path: Path, prob: Problem) -> None:
     lines = [
-        f"# {prob.title}",
+        f"# {prob.seo_title}",
         "",
         f"[:material-open-in-new: Open on LeetCode]({prob.url}){{ .md-button }}",
         "",
@@ -327,15 +373,58 @@ def write_problem_page(path: Path, prob: Problem) -> None:
                 lines.append(f"    {codeline}")
             lines.append("    ```")
             lines.append("")
+    lines.append(RELATED_FOOTER)
+    lines.append("")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def write_problems_index(path: Path, problems: dict[str, Problem]) -> None:
-    lines = ["# All Problems", "", "| Problem | Status | Languages |", "|---------|--------|-----------|"]
+    lines = ["# All Problems", "", "| # | Problem | Status | Languages |", "|---|---------|--------|-----------|"]
     for slug, prob in sorted(problems.items()):
         status = "✅ Accepted" if prob.accepted else "⏳ Attempted"
         langs = ", ".join(prob.languages)
-        lines.append(f"| [{prob.title}]({slug}.md) | {status} | {langs} |")
+        num = str(prob.number) if prob.number is not None else "—"
+        lines.append(f"| {num} | [{prob.title}]({slug}.md) | {status} | {langs} |")
+    lines.append("")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_lessons_index(path: Path, problems: dict[str, Problem]) -> None:
+    """Index of problems that have real failed attempts before the accept.
+
+    This is the archive's signature page: the slugs where there is a documented
+    Wrong Answer / TLE / Runtime Error / Compile Error to learn from.
+    """
+    rows: list[tuple[Problem, Counter[str]]] = []
+    for prob in problems.values():
+        wrong: Counter[str] = Counter()
+        for s in prob.submissions:
+            if s.verdict in WRONG_VERDICTS:
+                wrong[s.verdict] += 1
+        if wrong:
+            rows.append((prob, wrong))
+
+    rows.sort(key=lambda r: (-sum(r[1].values()), r[0].slug))
+    total_wrong = sum(sum(w.values()) for _, w in rows)
+
+    lines = [
+        "# Lessons / common mistakes",
+        "",
+        "The point of this archive: **every problem below was *not* solved on the",
+        "first try.** These pages keep the failed submissions — Wrong Answer, Time",
+        "Limit Exceeded, Runtime Error, Compile Error — next to the accepted one, so",
+        "you can read *what went wrong and why* instead of only a clean final answer.",
+        "",
+        f"- **Problems with at least one failed attempt:** {len(rows)}",
+        f"- **Total failed submissions preserved:** {total_wrong}",
+        "",
+        "| # | Problem | Failed attempts (by verdict) |",
+        "|---|---------|------------------------------|",
+    ]
+    for prob, wrong in rows:
+        num = str(prob.number) if prob.number is not None else "—"
+        detail = ", ".join(f"{v}: {wrong[v]}" for v in VERDICT_ORDER if wrong.get(v))
+        lines.append(f"| {num} | [{prob.title}](problems/{prob.slug}.md) | {detail} |")
     lines.append("")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -357,12 +446,21 @@ def write_tags_index(path: Path, problems: dict[str, Problem]) -> None:
 
 
 def write_docs_home(path: Path, stats: dict, problems: dict[str, Problem]) -> None:
+    n = stats["unique_slugs"]
     lines = [
         "# LeetCode Solutions Archive",
         "",
-        "A personal LeetCode archive with **real submission history** — including the",
-        "wrong-answer, runtime-error, and TLE attempts that came before each accepted",
-        "solution. Browse problems below or jump to the [index by language](tags.md).",
+        "Every LeetCode problem I solved — **including my real Wrong-Answer / TLE",
+        "submissions and the lesson from each.** Not a clean-solutions dump: each page",
+        "keeps the failed attempts next to the accepted one so you can read the",
+        "*progression*, not just the final answer.",
+        "",
+        f"[:material-magnify: Browse all {n} problems (searchable)]"
+        "(problems/index.md){ .md-button .md-button--primary }",
+        "[:material-lightbulb-on: Lessons / common mistakes](lessons.md){ .md-button }",
+        "",
+        "> Use the search box (top right) to jump straight to any problem by number or",
+        "> name.",
         "",
         "## At a glance",
         "",
@@ -375,7 +473,18 @@ def write_docs_home(path: Path, stats: dict, problems: dict[str, Problem]) -> No
     ]
     for lang in stats["languages"]:
         lines.append(f"| {lang['language']} | {lang['files']} | {lang['slugs']} |")
-    lines += ["", "[Browse all problems](problems/index.md){ .md-button .md-button--primary }", ""]
+    lines += [
+        "",
+        "## Coming soon: the `leetcode-solutions` MCP (Wave 2)",
+        "",
+        "A bundled, offline **MCP server** that exposes this archive — 173 problems",
+        "*with their real wrong-answer history* — to any MCP-capable assistant. No",
+        "session cookie required (rivals need one). *\"The MCP that remembers what NOT",
+        "to do.\"*",
+        "",
+        RELATED_FOOTER,
+        "",
+    ]
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
