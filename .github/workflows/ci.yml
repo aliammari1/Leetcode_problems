@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  progress:
+    name: Progress table is current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Fails if README's PROGRESS block or docs/progress.json drifted from
+      # solutions/ — keeps the 173-vs-542 stats honest and reconciled.
+      - name: Check generated stats
+        run: python scripts/generate_progress.py --check
+
+  cpp-syntax:
+    name: C++ preamble-injection syntax gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install g++
+        run: sudo apt-get update && sudo apt-get install -y g++
+      # Injects `#include <bits/stdc++.h>` + `using namespace std;` then runs
+      # g++ -fsyntax-only. Real errors fail the build (no `|| echo`).
+      - name: Syntax-check all Accepted C++ solutions
+        run: python scripts/compile_check.py --cxx g++ --std c++20
+
+  clang-format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: clang-format check (quoted globs)
+        run: |
+          # Paths contain spaces and commas — NUL-delimit and quote.
+          mapfile -d '' files < <(find solutions -type f -name 'Solution.cpp' -print0)
+          if [ ${#files[@]} -eq 0 ]; then echo "no C++ files"; exit 0; fi
+          clang-format --dry-run --Werror "${files[@]}"
+
+  cpp-linter:
+    name: cpp-linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cpp-linter/cpp-linter-action@v2
+        id: linter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          style: file
+          tidy-checks: "-*" # format-only; bare snippets have no compile DB
+          files-changed-only: false
+          extensions: cpp
+      - name: Fail on lint findings
+        if: steps.linter.outputs.checks-failed > 0
+        run: exit 1
+
+  sql:
+    name: sqlfluff (Oracle + MySQL)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install sqlfluff
+        run: pip install "sqlfluff==3.3.0"
+      - name: Lint Oracle SQL (quoted globs)
+        run: |
+          mapfile -d '' files < <(find solutions -type f -name '*.oraclesql' -print0)
+          if [ ${#files[@]} -eq 0 ]; then echo "no Oracle SQL"; exit 0; fi
+          sqlfluff lint --dialect oracle "${files[@]}"
+      - name: Lint MySQL (quoted globs)
+        run: |
+          mapfile -d '' files < <(find solutions -type f -name '*.mysql' -print0)
+          if [ ${#files[@]} -eq 0 ]; then echo "no MySQL"; exit 0; fi
+          sqlfluff lint --dialect mysql "${files[@]}"
+
+  docs:
+    name: mkdocs build (strict)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install docs deps
+        run: pip install -r requirements-docs.txt
+      - name: Generate pages
+        run: python scripts/generate_progress.py --docs
+      - name: Build
+        run: mkdocs build --strict
