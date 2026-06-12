@@ -111,28 +111,41 @@ Each problem follows this consistent structure:
 - **Timestamp Directories**: Each submission saved with exact timestamp
 - **Solution Files**: Named by language (e.g., `Solution.cpp`, `Solution.java`, `Solution.oraclesql`)
 
-## 🎯 Problem Categories
+## 🧭 Pattern index
 
-This repository covers a wide range of topics:
+The full, auto-generated index by language/pattern lives on the docs site
+([Index by Language](https://leetcode-problems.pages.dev/tags/)). The 14 core
+patterns this archive covers:
 
-### Data Structures
-- **Arrays**: Two Sum, Best Time to Buy and Sell Stock, Build Array from Permutation
-- **Strings**: Valid Anagram, Longest Common Prefix, Reverse String
-- **Linked Lists**: Reverse Linked List, Merge Two Sorted Lists, Middle of the Linked List
-- **Trees**: Binary Tree Traversals, Maximum Depth of Binary Tree, Same Tree
-- **Hash Tables**: Contains Duplicate, Single Number, Valid Anagram
-- **Stacks**: Valid Parentheses, Min Stack, Baseball Game
+| Pattern | Example problems (slug) |
+|---------|-------------------------|
+| Arrays | `two-sum`, `best-time-to-buy-and-sell-stock`, `build-array-from-permutation` |
+| Two Pointers | `two-sum-ii-input-array-is-sorted`, `palindrome-linked-list`, `backspace-string-compare` |
+| Sliding Window | `best-time-to-buy-and-sell-stock`, `max-consecutive-ones` |
+| Binary Search | `binary-search`, `search-insert-position`, `first-bad-version` |
+| Hashing | `contains-duplicate`, `valid-anagram`, `single-number` |
+| Stack | `valid-parentheses`, `baseball-game`, `min-stack` |
+| Linked List | `reverse-linked-list`, `merge-two-sorted-lists`, `middle-of-the-linked-list` |
+| Trees | `binary-tree-inorder-traversal`, `symmetric-tree`, `validate-binary-search-tree` |
+| BFS / DFS | `binary-tree-level-order-traversal`, `binary-tree-right-side-view` |
+| Divide & Conquer | `median-of-two-sorted-arrays`, `merge-two-sorted-lists` |
+| Greedy | `can-place-flowers`, `can-make-arithmetic-progression-from-sequence` |
+| Dynamic Programming | `climbing-stairs`, `fibonacci-number` |
+| Math | `palindrome-number`, `convert-the-temperature`, `add-binary` |
+| SQL | `combine-two-tables`, `big-countries`, `article-views-i` |
 
-### Algorithms
-- **Math Problems**: Fibonacci Number, Power calculations, Palindrome Number
-- **Binary Search**: Binary Search, First Bad Version, Search Insert Position
-- **Two Pointers**: Two Sum II, Reverse String, Valid Palindrome
-- **Simulation**: Fizz Buzz, Robot Return to Origin, Pascal's Triangle
+### 🗄️ SQL-50 / Oracle track
 
-### Database Problems (SQL)
-- **Joins**: Combine Two Tables, Replace Employee ID
-- **Aggregation**: Average Salary, Daily Leads and Partners
-- **Filtering**: Big Countries, Not Boring Movies, Recyclable Products
+Database solutions follow LeetCode's **SQL-50** study plan. A quirk worth
+calling out: SQL-50 is **MySQL-graded**, but most queries here were authored and
+saved as **Oracle PL/SQL** (`.oraclesql`, 26 files / 22 problems) with a couple
+of MySQL files (`.mysql`). They are linted accordingly —
+`sqlfluff --dialect oracle` for the Oracle files and `--dialect mysql` for the
+MySQL ones (see [`.sqlfluff`](.sqlfluff)). Representative problems: joins
+(`combine-two-tables`, `replace-employee-id-with-the-unique-identifier`),
+aggregation (`average-salary-excluding-the-minimum-and-maximum-salary`,
+`daily-leads-and-partners`), filtering (`big-countries`, `not-boring-movies`,
+`recyclable-and-low-fat-products`).
 
 ## 🔍 Example Solutions
 
@@ -257,22 +270,38 @@ clang-format --dry-run --Werror $(git ls-files 'solutions/**/Solution.cpp')
 sqlfluff lint --dialect oracle $(git ls-files 'solutions/**/*.oraclesql')
 ```
 
-## 📖 Documentation site
+## 📖 Documentation site (live demo)
+
+> **Live demo:** https://leetcode-problems.pages.dev
 
 An [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) site is
-generated from `solutions/` — one page per problem with its **verdict history**
-and every language variant in content tabs, plus an index by language. Build it:
+generated from `solutions/` — **one page per problem slug** showing its full
+**verdict history** (Accepted → Wrong Answer → Runtime Error → TLE, each
+timestamped) with every language variant in content tabs, plus an index by
+language. This is the showcase for the archive's unique angle: you can read the
+*progression* of attempts, not just the final answer.
+
+Build / preview it locally:
 
 ```bash
 pip install -r requirements-docs.txt
-python scripts/generate_progress.py --docs
-mkdocs build --strict
-mkdocs serve            # local preview
+python scripts/generate_progress.py --docs   # writes docs/problems/*.md, docs/index.md, docs/tags.md
+mkdocs build --strict                         # verifies all 173 pages
+mkdocs serve                                  # http://127.0.0.1:8000
 ```
 
-The site deploys to **Cloudflare Pages** via a gated workflow (see
-`.github/workflows/docs.yml`); the deploy step only runs when the
-`CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets are present.
+**Deploy (Cloudflare Pages).** Push to `main` triggers
+`.github/workflows/docs.yml`, which regenerates the per-slug pages, runs
+`mkdocs build --strict`, and deploys `site/` to a Cloudflare Pages project named
+`leetcode-problems`. The deploy step is **gated** — it only runs when the
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets are set, so
+forks and PRs still get a green build without any Cloudflare account. To wire up
+your own:
+
+1. Create a Cloudflare Pages project (Direct Upload) named `leetcode-problems`.
+2. Add `CLOUDFLARE_API_TOKEN` (Pages:Edit) and `CLOUDFLARE_ACCOUNT_ID` as repo
+   secrets.
+3. Push to `main` — the workflow builds and deploys automatically.
 
 ## 🤖 AI tooling
 
