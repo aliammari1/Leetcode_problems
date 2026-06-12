@@ -1,0 +1,33 @@
+# Mirrors the CI gates locally. Install: pip install pre-commit && pre-commit install
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: '^solutions/'
+      - id: trailing-whitespace
+        exclude: '^solutions/'
+      - id: check-yaml
+
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v19.1.5
+    hooks:
+      - id: clang-format
+        files: '^solutions/.*Solution\.cpp$'
+
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 3.3.0
+    hooks:
+      - id: sqlfluff-lint
+        name: sqlfluff (oracle)
+        files: '\.oraclesql$'
+        args: ["--dialect", "oracle"]
+
+  - repo: local
+    hooks:
+      - id: progress-table
+        name: progress table up to date
+        entry: python scripts/generate_progress.py --check
+        language: system
+        pass_filenames: false
+        files: '^solutions/|^scripts/generate_progress\.py$'
