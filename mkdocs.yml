@@ -1,0 +1,69 @@
+site_name: LeetCode Solutions Archive
+site_description: >-
+  A personal LeetCode archive with real submission history — including the wrong
+  attempts before each accepted solution — across C++, Java, and Oracle/MySQL SQL.
+site_author: Ali Ammari
+repo_url: https://github.com/aliammari1/Leetcode_problems
+repo_name: aliammari1/Leetcode_problems
+docs_dir: docs
+copyright: >-
+  Solution code © Ali Ammari (MIT). LeetCode problem statements and trademarks
+  are the property of LeetCode.
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - content.code.copy
+    - content.tabs.link
+    - navigation.tabs
+    - navigation.top
+    - navigation.instant
+    - search.highlight
+    - search.suggest
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  # Note: the per-slug pages under docs/problems/ are GENERATED fresh by
+  # scripts/generate_progress.py --docs and are not committed, so a
+  # git-revision-date plugin would warn on every page ("no git logs") and fail
+  # --strict. We deliberately omit it; the build date is shown by the theme.
+
+nav:
+  - Home: index.md
+  - All Problems: problems/index.md
+  - Index by Language: tags.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/aliammari1
+    - icon: simple/leetcode
+      link: https://leetcode.com/aliammari1/

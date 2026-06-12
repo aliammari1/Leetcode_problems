@@ -1,0 +1,20 @@
+# sqlfluff config. The default dialect is oracle (most DB solutions are
+# .oraclesql); the MySQL files are linted with `--dialect mysql` overriding this
+# in the dedicated CI step. Lint-only — these are LeetCode editor snippets, not
+# a managed schema, so we keep the rule set lenient and skip auto-fix in CI.
+[sqlfluff]
+dialect = oracle
+templater = raw
+max_line_length = 120
+# The files open with a `// https://...` comment line that is not valid SQL in
+# either dialect; ignore parsing/templating noise from that and focus on style.
+ignore = parsing,templating
+
+[sqlfluff:indentation]
+tab_space_size = 4
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = consistent
+
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = consistent

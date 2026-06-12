@@ -1,0 +1,12 @@
+# clang-format config for the C++ solution snippets.
+# These are bare LeetCode editor bodies (no includes), so formatting is the only
+# whole-file check that's meaningful; the syntax gate handles correctness.
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+SortIncludes: false

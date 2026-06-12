@@ -1,0 +1,5 @@
+# Pinned docs toolchain. mkdocs-material entered maintenance mode in late 2025;
+# pin a known-good release rather than tracking latest.
+mkdocs-material==9.5.49
+mkdocs==1.6.1
+pymdown-extensions==10.14.3
