@@ -1,0 +1,28 @@
+# mkdocs build output
+/site/
+
+# Generated docs pages (rebuilt by scripts/generate_progress.py --docs in CI;
+# not committed to avoid churn). Only docs/progress.json is committed so the
+# README's dynamic badges resolve without needing a docs build.
+/docs/problems/
+/docs/index.md
+/docs/tags.md
+/docs/lessons.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Internal growth/marketing notes (not for public)
+GROWTH.md
+BANNER.md
+SUBMITTING_TO_AWESOME.md
+launch-kit.md
+star-strategy.md
+modernization-backlog.md
