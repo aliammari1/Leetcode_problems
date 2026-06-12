@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "label": "solved",
+  "message": "173 problems",
+  "color": "brightgreen",
+  "stats": {
+    "unique_slugs": 173,
+    "total_files": 542,
+    "accepted_slugs": 160,
+    "accepted_pct": 92.5,
+    "languages": [
+      {
+        "language": "C++",
+        "files": 496,
+        "slugs": 146,
+        "pct_files": 91.5
+      },
+      {
+        "language": "Java",
+        "files": 18,
+        "slugs": 9,
+        "pct_files": 3.3
+      },
+      {
+        "language": "Oracle SQL",
+        "files": 26,
+        "slugs": 22,
+        "pct_files": 4.8
+      },
+      {
+        "language": "MySQL",
+        "files": 2,
+        "slugs": 2,
+        "pct_files": 0.4
+      }
+    ],
+    "verdicts": [
+      {
+        "verdict": "Accepted",
+        "files": 277
+      },
+      {
+        "verdict": "Wrong Answer",
+        "files": 156
+      },
+      {
+        "verdict": "Time Limit Exceeded",
+        "files": 57
+      },
+      {
+        "verdict": "Runtime Error",
+        "files": 47
+      },
+      {
+        "verdict": "Compile Error",
+        "files": 5
+      }
+    ]
+  }
+}
