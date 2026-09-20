@@ -1,0 +1,23 @@
+version: 2
+# Archive repo: the only moving dependencies are GitHub Actions and the docs
+# build tooling (requirements-docs.txt). Dependabot is the single dependency
+# bot here — a Renovate config was removed to avoid duplicate update PRs.
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
+    labels: ["dependencies"]
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "build"
+    labels: ["dependencies"]

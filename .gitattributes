@@ -1,0 +1,5 @@
+# Keep LF for scripts and config so CI bash/Python behave identically on all OSes.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.svg text eol=lf

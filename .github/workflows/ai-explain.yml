@@ -1,0 +1,62 @@
+name: AI solution explanations
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Max number of slugs to process (0 = all)"
+        default: "20"
+      force:
+        description: "Overwrite existing EXPLANATION.md"
+        type: boolean
+        default: false
+  schedule:
+    # Weekly top-up of any newly-added Accepted solutions lacking an explanation.
+    - cron: "0 5 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  explain:
+    name: Generate EXPLANATION.md with Claude
+    runs-on: ubuntu-latest
+    # Gated: the job only runs when ANTHROPIC_API_KEY is configured.
+    if: ${{ vars.ENABLE_AI == 'true' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Anthropic SDK
+        run: pip install "anthropic>=0.40"
+
+      - name: Generate explanations (with WA/RE diff hook)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AI_MODEL: ${{ vars.AI_MODEL || 'claude-sonnet-4-6' }}
+        run: |
+          # Script is a no-op when ANTHROPIC_API_KEY is unset, so this is safe
+          # to run on PRs / forks without the secret.
+          ARGS="--tag --limit ${{ github.event.inputs.limit || '20' }}"
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          python scripts/ai_explain.py $ARGS
+
+      - name: Open PR with new explanations
+        if: ${{ env.HAS_KEY == 'true' }}
+        env:
+          HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "docs: add AI-generated solution explanations"
+          title: "docs: AI solution explanations"
+          body: |
+            Auto-generated `EXPLANATION.md` files (approach, complexity, and a
+            diff vs the recorded Wrong-Answer / Runtime-Error attempts).
+            Review before merging.
+          branch: ai/explanations
+          add-paths: |
+            solutions/**/EXPLANATION.md
